@@ -11,7 +11,7 @@ import os
 import secrets
 from dotenv import load_dotenv
 
-from apps.line_bot.urls import LINE_BOT_ROUTER
+from apps.line_bot.urls import line_bot_router
 from core.config import settings
 
 ##? Load environment variables from .env file
@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
-APP = FastAPI(
+app = FastAPI(
     title="Yupeng GPT",
     docs_url=None,     # Disable default Swagger UI, redirecting to new url
     redoc_url=None,    # Disable ReDoc UI
@@ -34,7 +34,7 @@ APP = FastAPI(
 
 
 ##? Static files
-APP.mount(
+app.mount(
     "/static",
     StaticFiles(directory=STATIC_DIR),
     name="static"
@@ -44,27 +44,27 @@ templates = Jinja2Templates(directory = TEMPLATE_DIR)
 
 
 ##? Include routers
-APP.include_router(
-    LINE_BOT_ROUTER,
+app.include_router(
+    line_bot_router,
     prefix="/line-bot-api",
     tags=["Line Bot"]
 )
 
 ##? Middleware
-APP.add_middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'], # Allow all origins
     allow_methods=['*'], # Allow all HTTP methods
     allow_headers=['*'], # Allow all headers
 )
 
-APP.add_middleware(
+app.add_middleware(
     GZipMiddleware,
     minimum_size=1024  # Compress responses larger than 1KB
 )
 
 ##? OpenAPI protect
-@APP.get(
+@app.get(
     "/openapi.json",
     include_in_schema=False,
 )
@@ -73,9 +73,9 @@ async def custom_openapi(
 ):
     if request.cookies.get(COOKIE_NAME) == AUTH_TOKEN:
         return JSONResponse(get_openapi(
-            title=APP.title,
-            version=APP.version,
-            routes=APP.routes
+            title=app.title,
+            version=app.version,
+            routes=app.routes
         ))
 
     return RedirectResponse(
@@ -83,7 +83,7 @@ async def custom_openapi(
     )
 
 ##? Redirect to Swagger UI
-@APP.get(
+@app.get(
     "/yupeng-gpt-docs",
     include_in_schema=False
 )
@@ -100,7 +100,7 @@ async def redirect_to_swagger(
     )
 
 ##? Root HTML response
-@APP.get(
+@app.get(
     '/',
     tags=["Root"],
     response_class=HTMLResponse
@@ -116,7 +116,7 @@ async def root_page(
     )
 
 ##? Login HTML response
-@APP.get(
+@app.get(
     "/login",
     tags=["Login"],
     response_class=HTMLResponse
@@ -132,7 +132,7 @@ async def login_page(
     )
 
 ##? Login POST
-@APP.post(
+@app.post(
     "/login",
     tags=["Login"],
 )
@@ -171,7 +171,7 @@ async def login(
 if __name__ == "__main__":
     import uvicorn
     file_name = __file__.split("\\")[-1].split('.')[0]
-    serve_name = f"{file_name}:APP"
+    serve_name = f"{file_name}:app"
     uvicorn.run(
         serve_name,
         host="127.0.0.1",

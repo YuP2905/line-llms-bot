@@ -12,13 +12,13 @@ from linebot.v3.webhooks import MessageEvent, TextMessageContent
 
 from core.config import settings
 
-LINE_BOT_ROUTER = APIRouter()
+line_bot_router = APIRouter()
 HANDLER = WebhookHandler(settings.LINE_CHANNEL_SECRET)
 CONFIGURATION = Configuration(
     access_token=settings.LINE_CHANNEL_ACCESS_TOKEN
 )
 
-@LINE_BOT_ROUTER.post(
+@line_bot_router.post(
     "/webhook"
 )
 async def line_bot_webhook(
