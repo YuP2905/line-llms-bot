@@ -1,6 +1,8 @@
 fastapi
 uvicorn
 python-dotenv
+line-bot-sdk
+pydantic-settings
 jinja2
 aiofiles
 python-multipart
