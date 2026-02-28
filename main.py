@@ -128,7 +128,8 @@ async def redirect_to_docs():
     )
 
 @app.get(
-    "debug",
+    "/debug",
+    tags=["Debug"],
 )
 async def get_debug():
     files_in_static: list[str] = []
