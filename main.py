@@ -141,6 +141,8 @@ async def login(
     username: str = Form(...),
     password: str = Form(...)
 ):
+    print(f"DEBUG: Input User: {username}, Expected User: {settings.USER}")
+    print(f"DEBUG: Env Keys Present: {list(os.environ.keys())}")
     env_user = settings.LOGIN_USER
     env_pwd = settings.LOGIN_PASSWORD
     if (env_user and env_pwd) \
