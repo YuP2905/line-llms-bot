@@ -3,8 +3,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.security import HTTPBasic
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 
 import os
@@ -25,19 +25,11 @@ app = FastAPI(
 security = HTTPBasic()
 
 ##? Static files
-# app.mount(
-#     "/static",
-#     StaticFiles(
-#         directory=os.path.join(
-#             os.path.dirname(os.path.abspath(__file__)),
-#             "static"
-#         )
-#     ),
-#     name="static"
-# )
+BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR: str = os.path.join(BASE_DIR, "static")
 app.mount(
     "/static",
-    StaticFiles(directory="static"),
+    StaticFiles(directory=STATIC_DIR),
     name="static"
 )
 
@@ -134,6 +126,21 @@ async def redirect_to_docs():
         openapi_url="/openapi.json",
         title="YupengGPT Docs"
     )
+
+@app.get(
+    "debug",
+)
+async def get_debug():
+    files_in_static: list[str] = []
+    if os.path.exists(STATIC_DIR):
+        files_in_static = os.listdir(STATIC_DIR)
+    return JSONResponse({
+        "cwd": os.getcwd(),
+        "base_dir": BASE_DIR,
+        "static_dir": STATIC_DIR,
+        "static_exists": os.path.exists(STATIC_DIR),
+        "files_under_static": files_in_static
+    })
 
 if __name__ == "__main__":
     import uvicorn
