@@ -141,8 +141,8 @@ async def login(
     username: str = Form(...),
     password: str = Form(...)
 ):
-    env_user = settings.USER
-    env_pwd = settings.PASSWORD
+    env_user = settings.LOGIN_USER
+    env_pwd = settings.LOGIN_PASSWORD
     if (env_user and env_pwd) \
         and secrets.compare_digest(username, env_user) \
         and secrets.compare_digest(password, env_pwd):
