@@ -25,8 +25,8 @@ app = FastAPI(
 security = HTTPBasic()
 
 ##? Static files
-BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR: str = os.path.join(BASE_DIR, "static")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
 app.mount(
     "/static",
     StaticFiles(directory=STATIC_DIR),
@@ -34,7 +34,8 @@ app.mount(
 )
 
 ##? Jinja2 templates
-templates = Jinja2Templates(directory="templates")
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+templates = Jinja2Templates(directory = TEMPLATE_DIR)
 
 ##? Middleware
 app.add_middleware(
