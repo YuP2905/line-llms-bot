@@ -25,6 +25,16 @@ app = FastAPI(
 security = HTTPBasic()
 
 ##? Static files
+# app.mount(
+#     "/static",
+#     StaticFiles(
+#         directory=os.path.join(
+#             os.path.dirname(os.path.abspath(__file__)),
+#             "static"
+#         )
+#     ),
+#     name="static"
+# )
 app.mount(
     "/static",
     StaticFiles(directory="static"),
