@@ -1,14 +1,23 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 :root {
-  --el-color-primary: #409eff;
-  --el-border-color: #dcdfe6;
-  --el-text-color-primary: #606266;
-  --el-bg-color: #f5f7fa;
-  --el-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  color-scheme: light dark;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
-  background-color: var(--el-bg-color);
+  font-family: var(--el-font-family);
+  background-color: var(--el-bg-color-page);
+  color: var(--el-text-color-primary);
+  transition: var(--el-transition-all);
+  -webkit-transition: var(--el-transition-all);
+  -moz-transition: var(--el-transition-all);
+  -ms-transition: var(--el-transition-all);
+  -o-transition: var(--el-transition-all);
 }

@@ -1,40 +1,41 @@
-from fastapi import FastAPI, Request, Form, Response, status
+from fastapi import FastAPI, Request, Form, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from fastapi.security import HTTPBasic
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.openapi.utils import get_openapi
 from fastapi.openapi.docs import get_swagger_ui_html
 
 import os
 import secrets
 from dotenv import load_dotenv
+
 ##? Load environment variables from .env file
 load_dotenv()
-
 COOKIE_NAME = "yupeng_gpt_session"
 AUTH_TOKEN = "yupeng_gpt_tokens"
 
 app = FastAPI(
     title="Yupeng GPT",
-    docs_url=None,
-    redoc_url=None,
+    docs_url=None,     # Disable default Swagger UI, redirecting to new url
+    redoc_url=None,    # Disable ReDoc UI
+    openapi_url=None,  # Disable OpenAPI schema, and enable OpenAPI after logining
     debug=True
 )
-security = HTTPBasic()
 
-##? Static files
+##? Paths for static files and templates
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+##? Static files
 app.mount(
     "/static",
     StaticFiles(directory=STATIC_DIR),
     name="static"
 )
-
 ##? Jinja2 templates
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 templates = Jinja2Templates(directory = TEMPLATE_DIR)
 
 ##? Middleware
@@ -49,6 +50,42 @@ app.add_middleware(
     GZipMiddleware,
     minimum_size=1024  # Compress responses larger than 1KB
 )
+
+##? OpenAPI protect
+@app.get(
+    "/openapi.json",
+    include_in_schema=False,
+)
+async def custom_openapi(
+    request: Request
+):
+    if request.cookies.get(COOKIE_NAME) == AUTH_TOKEN:
+        return JSONResponse(get_openapi(
+            title=app.title,
+            version=app.version,
+            routes=app.routes
+        ))
+
+    return RedirectResponse(
+        url="/login",
+    )
+
+##? Redirect to Swagger UI
+@app.get(
+    "/yupeng-gpt-docs",
+    include_in_schema=False
+)
+async def redirect_to_swagger(
+    request: Request
+):
+    if request.cookies.get(COOKIE_NAME) == AUTH_TOKEN:
+        return get_swagger_ui_html(
+            openapi_url="/openapi.json",
+            title="YupengGPT Docs"
+        )
+    return RedirectResponse(
+        url="/login",
+    )
 
 ##? Root HTML response
 @app.get(
@@ -81,6 +118,7 @@ async def login_page(
             "request": request
         }
     )
+
 ##? Login POST
 @app.post(
     "/login",
@@ -117,32 +155,6 @@ async def login(
         status_code=status.HTTP_401_UNAUTHORIZED
     )
 
-
-@app.get(
-    "/yupeng-gpt-docs",
-    include_in_schema=False, # This endpoint will not appear in the OpenAPI schema
-)
-async def redirect_to_docs():
-    return get_swagger_ui_html(
-        openapi_url="/openapi.json",
-        title="YupengGPT Docs"
-    )
-
-@app.get(
-    "/debug",
-    tags=["Debug"],
-)
-async def get_debug():
-    files_in_static: list[str] = []
-    if os.path.exists(STATIC_DIR):
-        files_in_static = os.listdir(STATIC_DIR)
-    return JSONResponse({
-        "cwd": os.getcwd(),
-        "base_dir": BASE_DIR,
-        "static_dir": STATIC_DIR,
-        "static_exists": os.path.exists(STATIC_DIR),
-        "files_under_static": files_in_static
-    })
 
 if __name__ == "__main__":
     import uvicorn

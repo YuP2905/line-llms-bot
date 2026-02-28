@@ -3,28 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="icon" href="/static/img/plugin-circle.png" type="image/png">
   <title>Login - Yupeng GPT</title>
+  <link rel="stylesheet" href="/static/css/element-plus.css">
+  <link rel="stylesheet" href="/static/css/element-plus-dark.css">
   <link rel="stylesheet" href="/static/css/root.css">
   <link rel="stylesheet" href="/static/css/login.css">
+
+  <script src="/static/js/theme.js"></script>
 </head>
 <body>
   <div class="login-container">
     <div class="login-box">
       <h2 class="login-title">Yupeng-GPT Login</h2>
+
       <form action="/login" method="post">
+
         <div class="form-item">
           <label for="username">Username</label>
           <input type="text" id="username" name="username" placeholder="Please input username" required>
         </div>
+
         <div class="form-item">
           <label for="password">Password</label>
           <input type="password" id="password" name="password" placeholder="Please input password" required>
         </div>
+
         {% if error %}
         <div class="error-msg">{{ error }}</div>
         {% endif %}
         <button type="submit" class="submit-btn">Login</button>
+
       </form>
+
     </div>
   </div>
 </body>
