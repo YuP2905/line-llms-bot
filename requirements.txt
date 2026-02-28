@@ -2,6 +2,7 @@ fastapi
 uvicorn
 python-dotenv
 line-bot-sdk
+google-generativeai
 pydantic-settings
 jinja2
 aiofiles

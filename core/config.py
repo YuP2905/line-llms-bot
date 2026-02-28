@@ -9,7 +9,11 @@ class Settings:
 
     LOGIN_USER = os.getenv("LOGIN_USER", '')
     LOGIN_PASSWORD = os.getenv("LOGIN_PASSWORD", '')
-    COOKIE_NAME: str = os.getenv("COOKIE_NAME", "yupeng_gpt_session")
-    AUTH_TOKEN: str = os.getenv("AUTH_TOKEN", "yupeng_gpt_tokens")
+    COOKIE_NAME = os.getenv("COOKIE_NAME", "yupeng_gpt_session")
+    AUTH_TOKEN = os.getenv("AUTH_TOKEN", "yupeng_gpt_tokens")
+
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", '')
+    BOT_NAME = os.getenv("LINE_BOT_NAME", "@YupengGPT")
+
 
 settings = Settings()
