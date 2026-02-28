@@ -24,7 +24,7 @@ line_config = Configuration(
 )
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel(settings.GEMINI_MODEL)
 
 @line_bot_router.post(
     "/webhook"
