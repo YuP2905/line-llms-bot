@@ -7,41 +7,31 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.openapi.utils import get_openapi
 from fastapi.openapi.docs import get_swagger_ui_html
 
-import os
 import secrets
-from dotenv import load_dotenv
 
 from apps.line_bot.urls import line_bot_router
 from core.config import settings
 
 ##? Load environment variables from .env file
-load_dotenv()
 COOKIE_NAME = settings.COOKIE_NAME
 AUTH_TOKEN = settings.AUTH_TOKEN
 
-##? Paths for static files and templates
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
-
 app = FastAPI(
     title="Yupeng GPT",
-    docs_url=None,     # Disable default Swagger UI, redirecting to new url
+    docs_url=None,     # Disable default Swagger UI, redirecting to a new url
     redoc_url=None,    # Disable ReDoc UI
-    openapi_url=None,  # Disable OpenAPI schema, and enable OpenAPI after logining
-    debug=True
+    openapi_url=None,  # Disable OpenAPI schema(openapi.json), and enable OpenAPI after logining
+    debug=True         # Debug
 )
-
 
 ##? Static files
 app.mount(
     "/static",
-    StaticFiles(directory=STATIC_DIR),
+    StaticFiles(directory="static"),
     name="static"
 )
 ##? Jinja2 templates
-templates = Jinja2Templates(directory = TEMPLATE_DIR)
-
+templates = Jinja2Templates(directory = "templates")
 
 ##? Include routers
 app.include_router(
@@ -60,10 +50,10 @@ app.add_middleware(
 
 app.add_middleware(
     GZipMiddleware,
-    minimum_size=1024  # Compress responses larger than 1KB
+    minimum_size=2048  # Compress responses larger than 2KB
 )
 
-##? OpenAPI protect
+##? (API) OpenAPI Json protect
 @app.get(
     "/openapi.json",
     include_in_schema=False,
@@ -82,7 +72,7 @@ async def custom_openapi(
         url="/login",
     )
 
-##? Redirect to Swagger UI
+##? (API) Swagger UI protect
 @app.get(
     "/yupeng-gpt-docs",
     include_in_schema=False
@@ -169,12 +159,17 @@ async def login(
 
 
 if __name__ == "__main__":
+    from typing import Final
+    from pathlib import Path
     import uvicorn
-    file_name = __file__.split("\\")[-1].split('.')[0]
-    serve_name = f"{file_name}:app"
+
+    file_stem = Path(__file__).stem
+    serve_name: Final[str] = f"{file_stem}:app"
+
+    PORT = int(settings.PORT)
     uvicorn.run(
         serve_name,
         host="127.0.0.1",
-        port=8000,
+        port=PORT,           ##! cloudflared\conifg.yml
         reload=True
     )
