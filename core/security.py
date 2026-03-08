@@ -1,7 +1,6 @@
 from typing import Final
 import bcrypt
 
-
 def verify_password(
     plain_password: str,
     hashed_password: str

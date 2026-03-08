@@ -13,6 +13,7 @@ import secrets
 from apps.bot.urls import line_bot_router
 from services.manager import model_manager
 from core.config import settings
+from core.security import verify_password
 
 ##? Load environment variables from .env file
 COOKIE_NAME = settings.COOKIE_NAME
@@ -148,7 +149,7 @@ async def login(
     env_pwd = settings.LOGIN_PASSWORD
     if (env_user and env_pwd) \
         and secrets.compare_digest(username, env_user) \
-        and secrets.compare_digest(password, env_pwd):
+        and verify_password(password, env_pwd):
 
         redirect = RedirectResponse(
             url="/yupeng-gpt-docs",
