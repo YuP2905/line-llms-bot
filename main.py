@@ -7,21 +7,34 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.openapi.utils import get_openapi
 from fastapi.openapi.docs import get_swagger_ui_html
 
+from contextlib import asynccontextmanager
 import secrets
 
-from apps.line_bot.urls import line_bot_router
+from apps.bot.urls import line_bot_router
+from services.manager import model_manager
 from core.config import settings
 
 ##? Load environment variables from .env file
 COOKIE_NAME = settings.COOKIE_NAME
 AUTH_TOKEN = settings.AUTH_TOKEN
 
+@asynccontextmanager
+async def lifespan(
+    app: FastAPI
+):
+    try:
+        model_manager.load_qwen_model()
+        yield
+    finally:
+        model_manager.clean() # type: ignore
+
 app = FastAPI(
     title="Yupeng GPT",
     docs_url=None,     # Disable default Swagger UI, redirecting to a new url
     redoc_url=None,    # Disable ReDoc UI
     openapi_url=None,  # Disable OpenAPI schema(openapi.json), and enable OpenAPI after logining
-    debug=True         # Debug
+    debug=True,        # Debug
+    lifespan=lifespan  # Init and clean models
 )
 
 ##? Static files
@@ -144,7 +157,10 @@ async def login(
         redirect.set_cookie(
             key=COOKIE_NAME,
             value=AUTH_TOKEN,
-            httponly=True,
+            httponly=True,     # Prevent JavaScript access to the cookie
+            max_age=3600,      # Cookie expires in 1 hour
+            samesite="lax",    # Mitigate CSRF, but still send cookies on top-level navigation
+            secure=True,       # Ensure the cookie is sent over HTTPS only
         )
         return redirect
 
@@ -166,7 +182,7 @@ if __name__ == "__main__":
     file_stem = Path(__file__).stem
     serve_name: Final[str] = f"{file_stem}:app"
 
-    PORT = int(settings.PORT)
+    PORT = settings.PORT
     uvicorn.run(
         serve_name,
         host="127.0.0.1",
