@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request, Form, status
+from typing import Callable, Awaitable
+
+from fastapi import FastAPI, Request, Form, status, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -66,6 +68,23 @@ app.add_middleware(
     GZipMiddleware,
     minimum_size=2048  # Compress responses larger than 2KB
 )
+
+@app.middleware(
+    "http"
+)
+async def block_ip_middleware(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]]
+):
+    client_ip = request.client.host if request.client else ''
+
+    if client_ip in settings.BLOCK_IPS_SET:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Forbidden"}
+        )
+    response = await call_next(request)
+    return response
 
 ##? (API) OpenAPI Json protect
 @app.get(

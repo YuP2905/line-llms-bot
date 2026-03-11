@@ -85,7 +85,6 @@ def qwen_chat_callback(
         video_metadata: Optional[List[Dict[str, Any]]] = None
 
         if or_video_inputs is not None:
-            # video_inputs_raw 的结构是 [(video_tensor, metadata), ...]
             video_inputs = [v[0] for v in or_video_inputs]
             video_metadata = [v[1] for v in or_video_inputs]
 
