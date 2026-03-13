@@ -1,4 +1,4 @@
-from typing import Set, Final
+from typing import List, Set, Final
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -13,7 +13,12 @@ class Settings(BaseSettings):
     #? Optional settings with default values
     COOKIE_NAME: str = "yupeng_gpt_session"
     AUTH_TOKEN: str = "yupeng_gpt_tokens"
-    BOLCK_IPS: str = "" # , separated IPs to block, e.g. "123.45.67.89,192.168.1.100"
+    BLOCK_IPS: Set[str] = set()
+    IP_HEADERS: List[str] = [
+        "cf-connecting-ip",  # Cloudflare
+        "x-forwarded-for",   # Standard header for identifying the originating IP address of a client connecting to a web server through an HTTP proxy or load balancer.
+        "x-real-ip"          # Nginx
+    ]
 
     BOT_NAME: str = "YupengGPT"
     SYSTEM_PROMPT: str = (
@@ -70,11 +75,5 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="allow"
     )
-
-    @property
-    def BLOCK_IPS_SET(self) -> Set[str]:
-        return set(
-            ip.strip() for ip in self.BOLCK_IPS.split(',') if ip.strip()
-        )
 
 settings = Settings()

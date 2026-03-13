@@ -76,9 +76,12 @@ async def block_ip_middleware(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]]
 ):
-    client_ip = request.client.host if request.client else ''
+    client_ip = next(
+        (v.split(',')[0].strip() for h in settings.IP_HEADERS if (v := request.headers.get(h))),
+        request.client.host if request.client else ''
+    )
 
-    if client_ip in settings.BLOCK_IPS_SET:
+    if client_ip in settings.BLOCK_IPS:
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"detail": "Forbidden"}
