@@ -1,13 +1,22 @@
 from typing import List, Set, Final
+from pydantic import SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from core.security import get_password_hash
 
 class Settings(BaseSettings):
     ##? Must be set in .env file or environment variables
     LOGIN_USER: str
-    LOGIN_PASSWORD: str
+    LOGIN_PASSWORD_PlainText: SecretStr
 
-    LINE_CHANNEL_SECRET: str
-    LINE_CHANNEL_ACCESS_TOKEN: str
+    @computed_field
+    @property
+    def LOGIN_PASSWORD(self) -> str:
+        return get_password_hash(
+            self.LOGIN_PASSWORD_PlainText.get_secret_value()
+        )
+
+    LINE_CHANNEL_SECRET: SecretStr
+    LINE_CHANNEL_ACCESS_TOKEN: SecretStr
     PORT: int
 
     #? Optional settings with default values
@@ -73,7 +82,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="allow"
+        extra="ignore",
+        case_sensitive=True # Environment variables are usually case-sensitive, so it's safer to enforce this.
     )
 
 settings = Settings()

@@ -1,5 +1,4 @@
-from typing import List, Dict, Optional, TypedDict, cast
-from asyncio import Lock
+from typing import Dict, Optional, cast
 
 from fastapi import APIRouter, Request, Header, BackgroundTasks,  status
 from fastapi.responses import JSONResponse
@@ -32,31 +31,24 @@ from services.manager import model_manager
 from apps.chat.callbacks import (
     qwen_chat_callback,
 )
+from apps.bot.typing import (
+    MESSAGE_DATA,
+    SESSION_DATA
+)
 
 line_bot_router = APIRouter()
 
-parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
+parser = WebhookParser(settings.LINE_CHANNEL_SECRET.get_secret_value())
 line_config = Configuration(
-    access_token=settings.LINE_CHANNEL_ACCESS_TOKEN
+    access_token=settings.LINE_CHANNEL_ACCESS_TOKEN.get_secret_value()
 )
 
 ##? Key: User ID
-class MESSAGE_DATA(TypedDict):
-    text: str
-    image: Optional[bytes]
-    video: Optional[bytes]
-    reply_token: str
-    lock: Lock
-    active: bool
 MESSAGE_ACCUMULATOR: Dict[
     str,
     MESSAGE_DATA
 ] = {}
 
-class SESSION_DATA(TypedDict):
-    last_active: float
-    history: List[str]
-    vision_context: str
 SESSION_BUFFER: Dict[
     str,
     SESSION_DATA
