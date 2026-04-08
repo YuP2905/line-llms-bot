@@ -210,5 +210,5 @@ if __name__ == "__main__":
         serve_name,
         host="127.0.0.1",
         port=PORT,           ##! cloudflared\conifg.yml
-        reload=True
+        reload=False
     )

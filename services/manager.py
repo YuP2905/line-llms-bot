@@ -136,7 +136,8 @@ class ModelManager:
             model_id,
             quantization_config=quant_config,
             device_map="auto",
-            dtype=self.compute_dtype
+            dtype=self.compute_dtype,
+            low_cpu_mem_usage=True
         )
 
         self.current_model = "qwen_multi"
