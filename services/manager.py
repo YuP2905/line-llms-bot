@@ -8,6 +8,7 @@ from asyncio import Lock
 from transformers import (
     BitsAndBytesConfig,
     Qwen3VLForConditionalGeneration,
+    Qwen3VLMoeForConditionalGeneration,
     Qwen3VLProcessor,
 )
 
@@ -45,7 +46,7 @@ class ModelManager:
             compute_dtype = torch.bfloat16
         self.compute_dtype = compute_dtype
 
-        self.qwen_model: Optional[Qwen3VLForConditionalGeneration] = None
+        self.qwen_model: Optional[Qwen3VLForConditionalGeneration | Qwen3VLMoeForConditionalGeneration] = None
         self.qwen_processor: Optional[Qwen3VLProcessor] = None
 
         self.sd_pipeline: Optional[StableDiffusionPipeline] = None
@@ -117,12 +118,12 @@ class ModelManager:
                 torch.cuda.get_device_properties(0)
             ).total_memory / (1024 ** 3)  # Convert to GB
 
-            if total_gpu_mem >= settings.MID_GPU_MEM_THRESHOLD:
-                model_id = settings.MID_QWEN_MODEL_ID
+            if total_gpu_mem >= settings.SUPPER_GPU_MEM_THRESHOLD:
+                model_id = settings.SUPPER_QWEN_MODEL_ID
             elif total_gpu_mem >= settings.MAX_GPU_MEM_THRESHOLD:
                 model_id = settings.MAX_QWEN_MODEL_ID
-            elif total_gpu_mem >= settings.SUPPER_GPU_MEM_THRESHOLD:
-                model_id = settings.SUPPER_QWEN_MODEL_ID
+            elif total_gpu_mem >= settings.MID_GPU_MEM_THRESHOLD:
+                model_id = settings.MID_QWEN_MODEL_ID
 
         if not model_id:
             raise ValueError(
@@ -132,7 +133,12 @@ class ModelManager:
         quant_config = self._get_quant_config()
 
         self.qwen_processor = Qwen3VLProcessor.from_pretrained(model_id)
-        self.qwen_model = Qwen3VLForConditionalGeneration.from_pretrained(
+        model_class = (
+            Qwen3VLMoeForConditionalGeneration
+            if model_id == settings.SUPPER_QWEN_MODEL_ID
+            else Qwen3VLForConditionalGeneration
+        )
+        self.qwen_model = model_class.from_pretrained(
             model_id,
             quantization_config=quant_config,
             device_map="auto",

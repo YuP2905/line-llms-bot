@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     MAX_QWEN_MODEL_ID: str = "Qwen/Qwen3-VL-8B-Instruct"
 
     SUPPER_GPU_MEM_THRESHOLD: float = 128 # in GB
-    SUPPER_QWEN_MODEL_ID: str = "Qwen/Qwen/Qwen3-VL-30B-A3B-Instruct"
+    SUPPER_QWEN_MODEL_ID: str = "Qwen/Qwen3-VL-30B-A3B-Instruct"
 
     IMAGE_MIN_PIXELS: int = 50176  # 224 * 224
     IMAGE_MAX_PIXELS: int = 313600  # 560 * 560

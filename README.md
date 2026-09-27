@@ -72,9 +72,7 @@ LOGIN_USER=""                    # Login username
 LOGIN_PASSWORD_PlainText=""      # Login password (plain text, will be hashed automatically)
 LINE_CHANNEL_SECRET=""           # LINE Channel Secret
 LINE_CHANNEL_ACCESS_TOKEN=""     # LINE Channel Access Token
-TEXT_MODEL_ID=""                 # Text model ID
 DIFFUSION_MODEL_ID=""            # Image generation model ID
-VISION_MODEL_ID=""               # Vision model ID
 PORT=""                          # Service port
 
 # Optional
