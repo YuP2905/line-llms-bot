@@ -1,4 +1,4 @@
-from typing import Callable, Awaitable
+from typing import Callable, Awaitable, Annotated
 
 from fastapi import FastAPI, Request, Form, status, Response
 from fastapi.staticfiles import StaticFiles
@@ -29,14 +29,14 @@ async def lifespan(
         model_manager.load_qwen_model()
         yield
     finally:
-        model_manager.clean() # type: ignore
+        model_manager.clean()
 
 app = FastAPI(
     title="Yupeng GPT",
     docs_url=None,     # Disable default Swagger UI, redirecting to a new url
     redoc_url=None,    # Disable ReDoc UI
     openapi_url=None,  # Disable OpenAPI schema(openapi.json), and enable OpenAPI after logining
-    debug=True,        # Debug
+    debug=False,       # Debug
     lifespan=lifespan  # Init and clean models
 )
 
@@ -164,8 +164,8 @@ async def login_page(
 )
 async def login(
     request: Request,
-    username: str = Form(...),
-    password: str = Form(...)
+    username: Annotated[str, Form(...)],
+    password: Annotated[str, Form(...)]
 ):
     env_user = settings.LOGIN_USER
     env_pwd = settings.LOGIN_PASSWORD

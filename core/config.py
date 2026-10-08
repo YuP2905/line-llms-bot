@@ -1,6 +1,7 @@
 from typing import List, Set, Final
 from pydantic import SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from functools import cached_property
 from core.security import get_password_hash
 
 class Settings(BaseSettings):
@@ -9,7 +10,7 @@ class Settings(BaseSettings):
     LOGIN_PASSWORD_PlainText: SecretStr
 
     @computed_field
-    @property
+    @cached_property
     def LOGIN_PASSWORD(self) -> str:
         return get_password_hash(
             self.LOGIN_PASSWORD_PlainText.get_secret_value()
@@ -86,4 +87,4 @@ class Settings(BaseSettings):
         case_sensitive=True # Environment variables are usually case-sensitive, so it's safer to enforce this.
     )
 
-settings = Settings()
+settings = Settings() # pyright: ignore[reportCallIssue]
