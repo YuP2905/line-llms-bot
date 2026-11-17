@@ -1,6 +1,6 @@
 from typing import Optional, Callable, TypeVar, cast, TYPE_CHECKING
 if TYPE_CHECKING:
-    from torch._C import _CudaDeviceProperties # type: ignore[import]
+    from torch._C import _CudaDeviceProperties # pyright: ignore
 
 from typing_extensions import ParamSpec
 from asyncio import Lock
@@ -12,7 +12,7 @@ from transformers import (
     Qwen3VLProcessor,
 )
 
-from diffusers import StableDiffusionPipeline
+from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion import StableDiffusionPipeline
 import functools
 import asyncio
 import torch
@@ -76,18 +76,18 @@ class ModelManager:
         async with self.lock:
             if task_type == "qwen_multi":
                 self.load_qwen_model()
-            elif task_type == "image_gen":
-                self.load_sd_model()
+            elif task_type == "image_gen":   # pyright: ignore
+                self.load_sd_model()         # pyright: ignore
             else:
                 raise ValueError(
                     f"Unsupported task type: {task_type}"
                 )
             loop = asyncio.get_event_loop()
             task = functools.partial(func, *args, **kwargs)
-            res = cast(T, await loop.run_in_executor(
+            res = await loop.run_in_executor(
                 None,
                 task
-            ))
+            )
             return res
 
     def _get_quant_config(
@@ -115,7 +115,7 @@ class ModelManager:
         if self.device == "cuda":
             total_gpu_mem = cast(
                 "_CudaDeviceProperties",
-                torch.cuda.get_device_properties(0)
+                torch.cuda.get_device_properties(0)   # pyright: ignore
             ).total_memory / (1024 ** 3)  # Convert to GB
 
             if total_gpu_mem >= settings.SUPPER_GPU_MEM_THRESHOLD:
@@ -132,13 +132,13 @@ class ModelManager:
 
         quant_config = self._get_quant_config()
 
-        self.qwen_processor = Qwen3VLProcessor.from_pretrained(model_id)
+        self.qwen_processor = Qwen3VLProcessor.from_pretrained(model_id)  # pyright: ignore
         model_class = (
             Qwen3VLMoeForConditionalGeneration
             if model_id == settings.SUPPER_QWEN_MODEL_ID
             else Qwen3VLForConditionalGeneration
         )
-        self.qwen_model = model_class.from_pretrained(
+        self.qwen_model = model_class.from_pretrained(                     # pyright: ignore
             model_id,
             quantization_config=quant_config,
             device_map="auto",
@@ -151,7 +151,7 @@ class ModelManager:
     def load_sd_model(
         self
     ) -> None:
-        if self.current_model == "image_gen":
+        if self.current_model == "image_gen":                                # pyright: ignore
             return
 
         self.clean()

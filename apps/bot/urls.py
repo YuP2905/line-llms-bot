@@ -1,9 +1,8 @@
-from typing import Dict, cast
+from typing import List, Dict, cast
 
 from fastapi import APIRouter, Request, Header, BackgroundTasks,  status
 from fastapi.responses import JSONResponse
 
-from linebot.v3.webhook import WebhookParser
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.messaging import (
     Configuration,
@@ -13,7 +12,10 @@ from linebot.v3.messaging import (
     ReplyMessageRequest,
     TextMessage,
 )
-
+from linebot.v3.webhook import (
+    WebhookParser,
+    WebhookPayload,
+)
 from linebot.v3.webhooks import (
     MessageEvent,
     TextMessageContent,
@@ -23,6 +25,7 @@ from linebot.v3.webhooks import (
     GroupSource,
     RoomSource
 )
+from linebot.v3.webhooks.models import Event
 import asyncio
 import time
 
@@ -71,9 +74,12 @@ async def line_bot_webhook(
     body_bytes: bytes = await request.body()
 
     try:
-        events: list = parser.parse(
-            body_bytes.decode("utf-8"),
-            x_line_signature
+        events = cast(
+            List[Event | WebhookPayload],
+            parser.parse(             # pyright: ignore
+                body_bytes.decode("utf-8"),
+                x_line_signature
+            )
         )
     except InvalidSignatureError:
         return JSONResponse(
@@ -106,6 +112,7 @@ async def handle_qwen_msg(
 
     Bot_name = settings.BOT_NAME
 
+    # ~ Future Work
     if user_id not in User_Message_Accumulator:
         # Initialize Message Auccumulator for this user
         User_Message_Accumulator[user_id] = {
@@ -117,6 +124,7 @@ async def handle_qwen_msg(
             "active": False
         }
 
+    # ~ Future Work
     ##? Get the accumulator for this user, which will store the text, image, video and reply token until the message is processed after the delay
     Msg_Accum = User_Message_Accumulator[user_id]
 

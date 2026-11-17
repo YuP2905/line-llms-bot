@@ -135,10 +135,8 @@ async def root_page(
     request: Request
 ):
     return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request
-        }
+        request=request,
+        name="index.html",
     )
 
 ##? Login HTML response
@@ -151,10 +149,8 @@ async def login_page(
     request: Request
 ):
     return templates.TemplateResponse(
-        "login.html",
-        {
-            "request": request
-        }
+        request=request,
+        name = "login.html",
     )
 
 ##? Login POST
@@ -188,9 +184,9 @@ async def login(
         return redirect
 
     return templates.TemplateResponse(
-        "login.html",
-        {
-            "request": request,
+        request=request,
+        name = "login.html",
+        context = {
             "error": "Invalid username or password"
         },
         status_code=status.HTTP_401_UNAUTHORIZED
