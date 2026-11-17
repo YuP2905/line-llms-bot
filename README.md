@@ -27,7 +27,8 @@ line-llms-bot/
 ├── services/
 │ └── manager.py     # Model manager (load / inference / cleanup)
 ├── templates/       # HTML templates (login page, etc.)
-└── requirements.txt # Python dependencies
+├── pyproject.toml   # Python dependencies (managed by uv)
+└── uv.lock          # Locked dependency versions
 ```
 
 ## 🔧 Tech Stack
@@ -85,14 +86,16 @@ TOP_P="0.9"                      # Top-p sampling parameter
 ## 🚀 Quick Start
 ### Install Dependencies
 
+Requires [uv](https://docs.astral.sh/uv/). Python 3.10 and the CUDA 12.1 build of PyTorch are installed automatically.
+
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ### Run the Service
 
 ```bash
-python main.py
+uv run main.py
 ```
 
 The service runs by default at: http://127.0.0.1:8192
