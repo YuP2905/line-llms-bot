@@ -1,3 +1,54 @@
+/* Subset of Element Plus variables actually used by root/login/index.css */
+:root {
+  --el-bg-color-overlay: #ffffff;
+  --el-bg-color-page: #f2f3f5;
+  --el-border-color: #dcdfe6;
+  --el-border-color-light: #e4e7ed;
+  --el-border-radius-base: 4px;
+  --el-border-radius-round: 20px;
+  --el-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04), 0px 8px 20px rgba(0, 0, 0, 0.08);
+  --el-color-error: #f56c6c;
+  --el-color-primary: #409eff;
+  --el-color-primary-dark-2: rgb(51.2, 126.4, 204);
+  --el-color-primary-light-3: rgb(121.3, 187.1, 255);
+  --el-color-white: #ffffff;
+  --el-component-size-large: 40px;
+  --el-fill-color-blank: #ffffff;
+  --el-font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  --el-font-size-base: 14px;
+  --el-font-size-extra-small: 12px;
+  --el-font-size-large: 18px;
+  --el-font-size-medium: 16px;
+  --el-font-weight-primary: 500;
+  --el-text-color-primary: #303133;
+  --el-text-color-regular: #606266;
+  --el-text-color-secondary: #909399;
+  --el-transition-all: all var(--el-transition-duration) var(--el-transition-function-ease-in-out-bezier);
+  --el-transition-border: border-color var(--el-transition-duration-fast) var(--el-transition-function-ease-in-out-bezier);
+  --el-transition-duration: 0.3s;
+  --el-transition-duration-fast: 0.2s;
+  --el-transition-function-ease-in-out-bezier: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* color-scheme: "light dark" below already switches native controls to dark */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --el-bg-color-overlay: #1d1e1f;
+    --el-bg-color-page: #0a0a0a;
+    --el-border-color: #4C4D4F;
+    --el-border-color-light: #414243;
+    --el-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.36), 0px 8px 20px rgba(0, 0, 0, 0.72);
+    --el-color-error: #f56c6c;
+    --el-color-primary: #409eff;
+    --el-color-primary-dark-2: rgb(102.2, 177.4, 255);
+    --el-color-primary-light-3: rgb(50.8, 116.6, 184.5);
+    --el-fill-color-blank: transparent;
+    --el-text-color-primary: #E5EAF3;
+    --el-text-color-regular: #CFD3DC;
+    --el-text-color-secondary: #A3A6AD;
+  }
+}
+
 *,
 *::before,
 *::after {

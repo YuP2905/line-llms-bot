@@ -91,6 +91,11 @@
   animation: el-fade-in var(--el-transition-duration) var(--el-transition-function-ease-in-out-bezier);
 }
 
+@keyframes el-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .motto-text-small {
   color: var(--el-text-color-secondary);
   font-size: var(--el-font-size-large);
